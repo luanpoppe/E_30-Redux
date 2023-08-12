@@ -1,11 +1,14 @@
+import { useDispatch, useSelector } from 'react-redux'
 import { Produto as ProdutoType } from '../../App'
 import * as S from './styles'
+import { adicionarAoCarrinhoReducer } from '../../store/carrinho'
+import { RootReducer } from '../../store'
+import { adicionarAoFavoritos } from '../../store/favoritos'
 
 type Props = {
   produto: ProdutoType
-  aoComprar: (produto: ProdutoType) => void
-  favoritar: (produto: ProdutoType) => void
-  estaNosFavoritos: boolean
+  // favoritar: (produto: ProdutoType) => void
+  // estaNosFavoritos: boolean
 }
 
 export const paraReal = (valor: number) =>
@@ -13,12 +16,17 @@ export const paraReal = (valor: number) =>
     valor
   )
 
-const ProdutoComponent = ({
-  produto,
-  aoComprar,
-  favoritar,
-  estaNosFavoritos
-}: Props) => {
+const ProdutoComponent = ({ produto }: Props) => {
+  const dispatch = useDispatch()
+  const listaFavoritos = useSelector((state: RootReducer) => state.favoritos)
+
+  const produtoEstaNosFavoritos = (produto: ProdutoType) => {
+    const produtoId = produto.id
+    const IdsDosFavoritos = listaFavoritos.map((f) => f.id)
+
+    return IdsDosFavoritos.includes(produtoId)
+  }
+
   return (
     <S.Produto>
       <S.Capa>
@@ -28,12 +36,27 @@ const ProdutoComponent = ({
       <S.Prices>
         <strong>{paraReal(produto.preco)}</strong>
       </S.Prices>
-      <S.BtnComprar onClick={() => favoritar(produto)} type="button">
-        {estaNosFavoritos
+      <S.BtnComprar
+        onClick={() => {
+          dispatch(adicionarAoFavoritos(produto))
+          produtoEstaNosFavoritos(produto)
+          console.log(produtoEstaNosFavoritos(produto))
+          // produto.estaNosFavoritos = !produto.estaNosFavoritos
+          // console.log(produto.estaNosFavoritos)
+          // console.log(listaFavoritos.map((f) => f.id).includes(produto.id))
+        }}
+        type="button"
+      >
+        {produtoEstaNosFavoritos(produto)
           ? '- Remover dos favoritos'
           : '+ Adicionar aos favoritos'}
       </S.BtnComprar>
-      <S.BtnComprar onClick={() => aoComprar(produto)} type="button">
+      <S.BtnComprar
+        onClick={() => {
+          dispatch(adicionarAoCarrinhoReducer(produto))
+        }}
+        type="button"
+      >
         Adicionar ao carrinho
       </S.BtnComprar>
     </S.Produto>
