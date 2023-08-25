@@ -11,7 +11,7 @@ const ProdutosComponent = () => {
   return (
     <>
       <S.Produtos>
-        {produtos.map((produto: ProdutoType) => (
+        {produtos?.map((produto: ProdutoType) => (
           <Produto key={produto.id} produto={produto} />
         ))}
       </S.Produtos>
