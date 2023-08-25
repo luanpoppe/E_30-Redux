@@ -1,14 +1,18 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { Produto as ProdutoType } from '../../App'
 import * as S from './styles'
-import { adicionarAoCarrinhoReducer } from '../../store/carrinho'
+import {
+  adicionarAoCarrinhoReducer,
+  removerDoCarrinhoReducer
+} from '../../store/carrinho'
 import { RootReducer } from '../../store'
-import { adicionarAoFavoritos } from '../../store/favoritos'
+import {
+  adicionarAoFavoritos,
+  removerDosFavoritos
+} from '../../store/favoritos'
 
 type Props = {
   produto: ProdutoType
-  // favoritar: (produto: ProdutoType) => void
-  // estaNosFavoritos: boolean
 }
 
 export const paraReal = (valor: number) =>
@@ -19,12 +23,19 @@ export const paraReal = (valor: number) =>
 const ProdutoComponent = ({ produto }: Props) => {
   const dispatch = useDispatch()
   const listaFavoritos = useSelector((state: RootReducer) => state.favoritos)
+  const listaCarrinho = useSelector((state: RootReducer) => state.carrinho)
 
   const produtoEstaNosFavoritos = (produto: ProdutoType) => {
     const produtoId = produto.id
     const IdsDosFavoritos = listaFavoritos.map((f) => f.id)
 
     return IdsDosFavoritos.includes(produtoId)
+  }
+  const produtoEstaNoCarrinho = (produto: ProdutoType) => {
+    const produtoId = produto.id
+    const IdsDosCarrinhos = listaCarrinho.map((f) => f.id)
+
+    return IdsDosCarrinhos.includes(produtoId)
   }
 
   return (
@@ -38,12 +49,11 @@ const ProdutoComponent = ({ produto }: Props) => {
       </S.Prices>
       <S.BtnComprar
         onClick={() => {
-          dispatch(adicionarAoFavoritos(produto))
-          produtoEstaNosFavoritos(produto)
-          console.log(produtoEstaNosFavoritos(produto))
-          // produto.estaNosFavoritos = !produto.estaNosFavoritos
-          // console.log(produto.estaNosFavoritos)
-          // console.log(listaFavoritos.map((f) => f.id).includes(produto.id))
+          if (!produtoEstaNosFavoritos(produto)) {
+            dispatch(adicionarAoFavoritos(produto))
+          } else {
+            dispatch(removerDosFavoritos(produto))
+          }
         }}
         type="button"
       >
@@ -53,11 +63,19 @@ const ProdutoComponent = ({ produto }: Props) => {
       </S.BtnComprar>
       <S.BtnComprar
         onClick={() => {
-          dispatch(adicionarAoCarrinhoReducer(produto))
+          if (!produtoEstaNoCarrinho(produto)) {
+            console.log(listaCarrinho)
+            dispatch(adicionarAoCarrinhoReducer(produto))
+          } else {
+            dispatch(removerDoCarrinhoReducer(produto))
+          }
+          console.log(listaCarrinho)
         }}
         type="button"
       >
-        Adicionar ao carrinho
+        {produtoEstaNoCarrinho(produto)
+          ? 'Remover do carrinho'
+          : 'Adicionar ao carrinho'}
       </S.BtnComprar>
     </S.Produto>
   )

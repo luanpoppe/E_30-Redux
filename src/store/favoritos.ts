@@ -11,20 +11,14 @@ const favoritosSlice = createSlice({
       state: Produto[],
       action: PayloadAction<Produto>
     ) => {
-      // state.push(action.payload)
-      // console.log(state)
-      if (state.find((p) => p.id === action.payload.id)) {
-        const favoritosSemProduto = state.filter(
-          (p) => p.id !== action.payload.id
-        )
-        // console.log(favoritosSemProduto)
-        state = favoritosSemProduto
-      } else {
-        state.push(action.payload)
-      }
+      state.push(action.payload)
+    },
+    removerDosFavoritos: (state: Produto[], action: PayloadAction<Produto>) => {
+      return state.filter((f) => f.id !== action.payload.id)
     }
   }
 })
 
-export const { adicionarAoFavoritos } = favoritosSlice.actions
+export const { adicionarAoFavoritos, removerDosFavoritos } =
+  favoritosSlice.actions
 export default favoritosSlice.reducer
