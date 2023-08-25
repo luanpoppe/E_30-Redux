@@ -8,20 +8,10 @@ import { useSelector } from 'react-redux'
 import { RootReducer } from '../../store'
 
 const Header = () => {
-  const itensNoCarrinho = useSelector((state: RootReducer) => {
-    if (state.carrinho) {
-      return state.carrinho
-    } else {
-      return []
-    }
-  })
-  const numeroDeFavoritos = useSelector((state: RootReducer) => {
-    if (state.favoritos) {
-      return state.favoritos.length
-    } else {
-      return 0
-    }
-  })
+  const itensNoCarrinho = useSelector((state: RootReducer) => state.carrinho)
+  const numeroDeFavoritos = useSelector(
+    (state: RootReducer) => state.favoritos.length
+  )
 
   const valorTotal = itensNoCarrinho.reduce((acc, item) => {
     acc += item.preco
